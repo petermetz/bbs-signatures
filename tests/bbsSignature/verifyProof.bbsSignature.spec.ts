@@ -89,7 +89,7 @@ describe("bbsSignature", () => {
       expect(verifyProof(request).verified).toBeTruthy();
     });
 
-    it("should not verify with bad nonce", () => {
+    it.only("should not verify with bad nonce", () => {
       const messages = [stringToBytes("KNK0ITRAF+NrGg==")];
       const bbsPublicKey = base64Decode(
         "qJgttTOthlZHltz+c0PE07hx3worb/cy7QY5iwRegQ9BfwvGahdqCO9Q9xuOnF5nD/Tq6t8zm9z26EAFCiaEJnL5b50D1cHDgNxBUPEEae+4bUb3JRsHaxBdZWDOo3pboZyjM38YgjaUBcjftZi5gb58Qz13XeRJpiuUHH06I7/1Eb8oVtIW5SGMNfKaqKhBAAAAAYPPztgxfWWw01/0SSug1oLfVuI4XUqhgyZ3rS6eTkOLjnyR3ObXb0XCD2Mfcxiv6w=="

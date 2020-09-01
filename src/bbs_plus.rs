@@ -19,7 +19,7 @@ use std::{
     iter::FromIterator,
 };
 use wasm_bindgen::prelude::*;
-
+//
 wasm_impl!(BbsSignRequest, keyPair: BbsKeyPair, messages: Vec<Vec<u8>>);
 
 wasm_impl!(
@@ -101,7 +101,7 @@ pub fn bbs_sign(request: JsValue) -> Result<JsValue, JsValue> {
         .collect();
     match Signature::new(messages.as_slice(), &sk, &request.keyPair.publicKey) {
         Ok(sig) => Ok(serde_wasm_bindgen::to_value(&sig).unwrap()),
-        Err(e) => Err(JsValue::from("Failed to sign")),
+        Err(_) => Err(JsValue::from("Failed to sign")),
     }
 }
 
@@ -290,6 +290,7 @@ pub fn bbs_create_proof(request: JsValue) -> Result<JsValue, JsValue> {
 
 #[wasm_bindgen(js_name = verifyProof)]
 pub fn bbs_verify_proof(request: JsValue) -> Result<JsValue, JsValue> {
+
     let res = serde_wasm_bindgen::from_value::<VerifyProofContext>(request);
     let request: VerifyProofContext;
     match res {
@@ -330,4 +331,19 @@ pub fn bbs_verify_proof(request: JsValue) -> Result<JsValue, JsValue> {
         error: None,
     })
     .unwrap())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::convert::TryFrom;
+
+    #[test]
+    fn bad_proof_value() {
+        let res = base64::decode("pIeLfsSfc1OiVl+pl/JhNuUCU4QgxbWrh65HGF3E+O/RvlZbWxXwQaFlT6FNZjpQqxbiTRy11m4eU4IUyjLUVbJM37Q0WNAHi8ZtHgRzet4WvXAceUAd/uMTMAXkYYcKtejUTHHNznH4lXDfvX0Cwhd9K0jNKtOoH6/cU2UoWs3xXmIU8VzAlK2D5USD0XugAAAAdJVWlU2ZGa5oqSfBbW9r4d2nS/iF/0mC47gK5vAprhIA7cZg2g+a4WvgkGa7O9rr/gAAAAJmNzGETKIxJgvAECZDbURQzj+ty9MXZjja8m1tuy8DCEzM7hSK8BLL63mvSfiPYwuzSPrTAGNHVx2o2+OqXLZyt0ZAl+ObXg7lo5wOtjBrhvh/duOon2bkr+H3lSg9KGsjy4K9Eg8CkHnbKQnJ3R21AAAAAg1ueBGiTp1ucUqlD62vuEiBmR01q16EkdjLB4TYPfBcZ0GeQ3P7t+3ar0k+CZcoVyLktXjwmtsLxcjntzbHyN0=");
+        assert!(res.is_ok());
+        let proof_bytes = res.unwrap();
+        let res = PoKOfSignatureProofWrapper::try_from(proof_bytes.as_slice());
+        assert!(res.is_err());
+    }
 }

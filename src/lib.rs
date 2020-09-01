@@ -10,6 +10,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#![deny(
+// warnings,
+// missing_docs,
+// unsafe_code,
+// unused_import_braces,
+// unused_lifetimes,
+// unused_qualifications,
+)]
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -69,6 +77,9 @@ impl TryFrom<&[u8]> for PoKOfSignatureProofWrapper {
 
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
         let message_count = u16::from_be_bytes(*array_ref![value, 0, 2]) as usize;
+        if message_count > (value.len() - 2) {
+            return Err(JsValue::from_bool(false));
+        }
         let bitvector_length = (message_count / 8) + 1;
         let offset = bitvector_length + 2;
         let proof = map_err!(PoKOfSignatureProof::try_from(&value[offset..]))?;

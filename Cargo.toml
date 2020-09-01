@@ -16,6 +16,7 @@ default = []
 
 [dependencies]
 arrayref = "0.3"
+base64 = "0.12"
 bbs = { version = "0.4.1", default-features = false, features = ["wasm"] }
 console_error_panic_hook = { version = "0.1.1", optional = true }
 hkdf = "0.8"
